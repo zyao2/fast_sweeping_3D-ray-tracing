@@ -1,0 +1,23 @@
+function TT=FSM(Velocity,TT)
+global dimsize
+
+maxSweeps=8;
+NDims=3;
+[incs,inits,ends]=initial_fs(NDims);
+
+for k=1:maxSweeps
+    [incs,inits,ends]=setSweep(incs,inits,ends, dimsize);
+    TT=fsweep_3d_a(Velocity,TT_,incs,inits,ends);
+    %sum(sum(sum((TT-TT_old).^2)))
+    TT_old=TT;
+end
+
+return;
+for k=1:3
+    incs(k)=1;
+    inits(k)=1;
+    ends(k)=dimsize(k);
+end
+TT=fsweep_3d_a(Velocity,TT,incs,inits,ends);
+return;
+      
