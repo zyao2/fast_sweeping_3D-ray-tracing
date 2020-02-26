@@ -64,7 +64,7 @@ contour(TTT,50)
 tic
 options.order = 1;
 
-G0=grad(TTT, 1,2, options);
+G0=grad_dxy(TTT, 1,2, options);
 %Normalize the gradient to obtained \(G(x) = G_0(x)/\norm{G_0(x)}\), 
 %in order to have unit speed geodesic curve (parameterized by arc length).
 
