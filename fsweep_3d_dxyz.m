@@ -1,4 +1,4 @@
-function u=fsweep_3d(W,u, incs,inits,ends)
+function u=fsweep_3d_dxyz(W,u, incs,inits,ends)
 global dxyz t_inf
 [NX,NY,NZ]=size(W);
 dt=zeros(3,1);
