@@ -1,7 +1,6 @@
 function u=fsweep_3d_dxyz(W,u, incs,inits,ends)
 global dxyz t_inf
 [NX,NY,NZ]=size(W);
-dt=zeros(3,1);
 t=zeros(3,1);
 dxyz2=dxyz.^2;
 for ix=inits(1):incs(1):ends(1)     
@@ -32,7 +31,7 @@ for ix=inits(1):incs(1):ends(1)
                 t(3)=min(u(ix,iy,iz-1),u(ix,iy,iz+1));
             end 
            indx=(1:3)';
-            if(t(1)>t(2)+dt(2))
+            if(t(1)>t(2))
                 a=t(1);
                 k=indx(1);
                 t(1)=t(2);
