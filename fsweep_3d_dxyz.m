@@ -3,7 +3,7 @@ global dxyz t_inf
 [NX,NY,NZ]=size(W);
 dt=zeros(3,1);
 t=zeros(3,1);
-
+dxyz2=dxyz.^2;
 for ix=inits(1):incs(1):ends(1)     
     for iy=inits(2):incs(2):ends(2) 
         for iz=inits(3):incs(3):ends(3)
@@ -31,9 +31,6 @@ for ix=inits(1):incs(1):ends(1)
             else
                 t(3)=min(u(ix,iy,iz-1),u(ix,iy,iz+1));
             end 
-            for k=1:3
-             dt(k)=dxyz(k)/W(ix,iy,iz)*0;
-            end
            indx=(1:3)';
             if(t(1)>t(2)+dt(2))
                 a=t(1);
@@ -62,17 +59,14 @@ for ix=inits(1):incs(1):ends(1)
             if(t(1)==t_inf || tt<t(1) )
                 continue;
             end
-            
-            hf=dxyz(indx(1))/W(ix,iy,iz);
-            ubar=t(1)+hf;
+            ubar=t(1)+dxyz(indx(1))/W(ix,iy,iz);
             if(ubar>t(2))
-                aa=dxyz(indx(1))^2+dxyz(indx(2))^2;
-                bb=-2*(dxyz(indx(2))^2*t(1)+dxyz(indx(1))^2*t(2));
-                cc=dxyz(indx(2))^2*t(1)^2+dxyz(indx(1))^2*t(2)^2-(dxyz(indx(1))*dxyz(indx(2))/W(ix,iy,iz))^2;
+                aa=dxyz2(indx(1))+dxyz2(indx(2));
+                bb=-2*(dxyz2(indx(2))*t(1)+dxyz2(indx(1))*t(2));
+                cc=dxyz2(indx(2))*t(1)^2+dxyz2(indx(1))*t(2)^2-(dxyz(indx(1))*dxyz(indx(2))/W(ix,iy,iz))^2;
                 bbb=bb^2-4*aa*cc;          
                 ubar=(-bb+sqrt(bbb))/(2*aa);
-
-               if(ubar>t(3)&& t(3)>t(1)+t(2))
+                if(ubar>t(3)&& t(3)>t(1)+t(2))
                     aa=dxyz(indx(1))^2*dxyz(indx(3))^2+dxyz(indx(1))^2*dxyz(indx(2))^2+...
                         dxyz(indx(3))^2*dxyz(indx(2))^2;
                     bb=-2*(dxyz(indx(2))^2*dxyz(indx(3))^2*t(1)+dxyz(indx(1))^2*dxyz(indx(3))^2*t(2)+...
@@ -80,14 +74,8 @@ for ix=inits(1):incs(1):ends(1)
                     cc=(dxyz(indx(2))*dxyz(indx(3))*t(1))^2+(dxyz(indx(1))*dxyz(indx(3))*t(2))^2+...
                         (dxyz(indx(1))*dxyz(indx(2))*t(3))^2;
                     cc=cc-(dxyz(indx(1))*dxyz(indx(2))*dxyz(indx(3))/W(ix,iy,iz))^2;
-                    bbb=bb^2-4*aa*cc;
-                   
-                   ubar1=(-bb+sqrt(bbb))/(2*aa);
-                                      
-                   if(abs(ubar1-ubar)>1.e-4)
-                       stop
-                   end
-                   
+                    bbb=bb^2-4*aa*cc;                 
+                    ubar=(-bb+sqrt(bbb))/(2*aa);
                end
             end
             if(u(ix,iy,iz)>ubar)
@@ -96,4 +84,3 @@ for ix=inits(1):incs(1):ends(1)
         end
     end
 end
-
