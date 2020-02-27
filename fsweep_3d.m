@@ -51,7 +51,7 @@ for ix=inits(1):incs(1):ends(1)
             if(ubar>t2)
                 bb=2*hf*hf-(t1-t2)^2;
                 ubar=0.5*(t1+t2+sqrt(bb));
-               if(ubar>t3 && t3>t1+t2)
+               if(ubar>t3)
                     bbb=2*(t(1)*t(2)-t(1)*t(1)-t(2)*t(2)+t(1)*t(3)+t(2)*t(3)-t(3)*t(3));
                     bbb=bbb+3*hf*hf;
                     ubar=(t(1)+t(2)+t(3)+sqrt(bbb))/3;
