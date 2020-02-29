@@ -23,8 +23,7 @@ for i=ny1:ndy:ny2 %y
         end
         aa=h*W(i,j);
         bb=abs(uxmin-uymin);
-        bbb=2*aa*aa-bb*bb;
-        if(bbb<=0) %if (bb>=aa)
+        if (bb>=aa)
              ubar = min(uxmin,uymin)+aa;
         else
              ubar = 0.5*(uxmin+uymin+sqrt(2*aa*aa-bb*bb));
