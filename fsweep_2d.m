@@ -1,5 +1,5 @@
 function u=fsweep_2d(W,u,ny1,ndy,ny2,nx1,ndx,nx2,dy,dx)
- global t_inf
+global t_inf
 [nodey,nodex]=size(W);
 for i=ny1:ndy:ny2 %y     
     for j=nx1:ndx:nx2%column     
@@ -21,27 +21,19 @@ for i=ny1:ndy:ny2 %y
         if(umin==t_inf || umin>u(i,j))
             continue;
         end
-        sx=1;sy=1;
-        if(uymin==t_inf)
-            sy=0;
-        end
-        if(uxmin==t_inf)
-            sx=0;
-        end
-        a = (sy/dy^2 + sx/dx^2);
-        b = -2*(sy*uymin/dy^2 + sx*uxmin/dx^2);
-        c = (sy*uymin/dy)^2 + (sx*uxmin/dx)^2 - (W(i,j))^2;
-        bb=b^2-4*a*c;
-        if (bb>0)                  
-            ubar=(-b+sqrt(b^2-4*a*c))/(2*a);
+        if(uxmin<uymin)
+            t2=uymin;
+            ubar=uxmin+dx*W(i,j);
         else
-            if(uxmin<=uymin)
-                ubar=uxmin+dx*W(i,j);
-            else
-                ubar = uymin+dy*W(i,j);
-            end
+            t2=uxmin;
+            ubar=uymin+dy*W(i,j);
         end
-         
+        if(ubar>t2)
+            a = (1/dy^2 + 1/dx^2);
+            b = -2*(uymin/dy^2 + uxmin/dx^2);
+            c = (uymin/dy)^2 + (uxmin/dx)^2 - (W(i,j))^2;                
+            ubar=(-b+sqrt(b^2-4*a*c))/(2*a);
+        end        
         if(u(i,j)>ubar)
             u(i,j)=ubar;
         end
