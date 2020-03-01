@@ -2,7 +2,7 @@ clear all
 %close all
 %(y,x)
 global t_inf
-dx=2;dy=1;
+dx=3;dy=1;
 t_inf=99999;
 m=1000;
 n = 500;
@@ -41,36 +41,36 @@ end
 
 Velocity=1./Velocity;
 %Velocity=Velocity*0+1;
-isx=150;
-isy=floor(topo(isx)+0.5)+1
-irx=450;
-iry=floor(topo(irx)+0.5);
 
 
+sx=71; %source location
+sy=topo(floor(sx/dx+1));
+rx=1207; %reciver location
+ry=topo(floor(rx/dx+1));
 %inital time map
 T0 = zeros(m,n)+t_inf;
-T0(isy,isx) = 0;
-
-%near source
-for i=-5:5
+%source location
+isy=floor(sy/dy);
+isx=floor(sx/dx);
+%near source time approcimation
+for i=-6:6
     k1=i+isy;
-    if(k1<1)
+    if(k1<0)
         continue;
     end
-    aa=(k1-1)*dy;
+    aa=(k1)*dy-sy;
     aa=aa*aa;
     for j=-5:5
         k2=j+isx;
-        if(k2<1)
+        if(k2<0)
             continue;
         end
-        bb=(k2-1)*dx;
-        bb=bb*bb;
+        bb=(k2)*dx-sx;
+         bb=bb*bb;
         dis=sqrt(aa+bb);
-        %T0(k1,k2)=dis*Velocity(k1,k2);
+        T0(k1+1,k2+1)=dis*Velocity(k1+1,k2+1);
     end
 end
-
 
 
 tic;
@@ -82,43 +82,40 @@ figure;hold on;
 contour(TTT,50)
 %return
 tic
-options.order = 2;
-G0 = grad_dxy(TTT, dy,dx, options);
+G0 = grad_dxy(TTT, dy,dx);
+% note that the grid size has bee scaled to one in grad_dxy
 
 %Normalize the gradient to obtained \(G(x) = G_0(x)/\norm{G_0(x)}\), 
 %in order to have unit speed geodesic curve (parameterized by arc length).
+G = G0 ./ repmat( sqrt( sum(G0.^2, 3) ), [1 1 2]);
 
-G = G0 ./ repmat( sqrt( sum(G0.^2, 3) ), [1 1 2])+1.e-15;
-
-%Initialize the path with the ending point.
-x0=[isy;isx];
-x1=[iry;irx];
+%Initialize the path with the ending point. !! noticed that the gradient
+%has bee scaled with grid size
+x0=[sy/dy;sx/dx];
+x1=[ry/dy;rx/dx];
 ray = x1;
 tic
-tau = 2;
+tau = 1;
 Geval = @(G,x)[interp2(1:n,1:n,G(:,:,1),x(2),x(1)); ...
              interp2(1:n,1:n,G(:,:,2),x(2),x(1)) ];
          
 %get path
 for kk=1:1
 ray = x1;
+icon=0;
 for i=1:5*n/tau
     ind=floor(ray(:,end));
+    ind=ind+1;    % noticed that index (1:m,1:n)
     aa=[G(ind(1),ind(2),1);G(ind(1),ind(2),2)];
-    aa=ray(:,end) - tau*aa;%Geval(G, ray(:,end));
-    if(aa(1)<1)
-        aa(1)=1;
-    end
-    if(aa(2)<1)
-        aa(2)=1;
-    end
+    aa=ray(:,end) - tau*aa;%Geval(G, ray(:,end)); 
     ray(:,end+1) = aa;%ray(:,end) - tau*Geval(G, ray(:,end));
-    if norm(ray(:,end)-x0)<1
+    if (ray(1,end)<0 ||ray(2,end)<0)
         break;
     end
 end
-ray(:,end+1) = x0;
+ray(:,end) = x0;
 end
+%ray=ray-1;
 toc
 
 h = plot(ray(2,:),ray(1,:)); set(h, 'LineWidth', 2);
